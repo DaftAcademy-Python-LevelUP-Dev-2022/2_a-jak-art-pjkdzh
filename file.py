@@ -59,7 +59,11 @@ def format_output(*required_keys):
 
 
 def add_method_to_instance(klass):
-    class Dummy(object):
-        def foo(self):
-            return self.__class__.__name__
-    return Dummy.foo
+    def inner(function):
+        @wraps(function)
+        def wrapper(*args, **kwargs):
+            return function()
+        setattr(klass, function.__name__, wrapper)
+        return function
+    return inner
+
